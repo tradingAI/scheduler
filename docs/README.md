@@ -3,7 +3,7 @@
 ## design
 ![architecture](images/scheduler.png)
 
-Scheduler：
+**Scheduler**
 1. 监听Runner（心跳）
 2. 负责创建, 回收, 重置Runner
 3. 分配Job给Runner (Scheduler写入Redis, Runner定时从Redis获取)
@@ -11,7 +11,7 @@ Scheduler：
 5. 如果某个Runner 心跳timeout, 则该Runner的所有job应更新为failed, 再重新分配(跳转至3)
 6. 如果job完成 Runner更新Redis中job状态，stop job的container
 
-Runner：
+**Runner**
 1. 定期发给Scheduler心跳(心跳内容包括 Runner状态、。。。）
 2. job已完成，写入redis
 3. 如果遇到error:
