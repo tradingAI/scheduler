@@ -24,10 +24,10 @@ Runner：
 2. 后端转发请求给Scheduler
 
 3. Scheduler查看有无空闲Runner分配Job
-3.1 如果有分配job（写入到Redis）
-3.2 如果没有就把job加入队列，等空了再分配
+- 3.1 如果有分配job（写入到Redis）
+- 3.2 如果没有就把job加入队列，等空了再分配
 
 4. Runner开始处理job：
-    step1. 创建job container
-    step2. 根据commit id pull 代码
-    step3. 运行job
+- step1. 创建job container
+- step2. 根据commit id pull 代码
+- step3. 运行job
