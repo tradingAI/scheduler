@@ -9,7 +9,7 @@
 3. 分配Job给Runner (Scheduler写入Redis, Runner定时从Redis获取)
 4. 获取Runner的状态，Job状态（Redis）
 5. 如果某个Runner 心跳timeout, 则该Runner的所有job应更新为failed, 再重新分配(跳转至3)
-6. 如果job完成 Runner更新Redis中job状态，stop job的container
+6. 如果job完成 直接更新Redis中job状态，stop job的container
 
 **Runner**
 1. 定期发给Scheduler心跳(心跳内容包括 Runner状态、。。。）
