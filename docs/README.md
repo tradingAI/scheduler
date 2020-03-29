@@ -15,8 +15,8 @@ Runner：
 1. 定期发给Scheduler心跳(心跳内容包括 Runner状态、。。。）
 2. job已完成，写入redis
 3. 如果遇到error:
-     a. job container 已经自动退出，向scheduler发送job failed
-     b. job container 还没有退出，则stop container，向scheduler发送job failed
+- job container 已经自动退出，向scheduler发送job failed
+- job container 还没有退出，则stop container，向scheduler发送job failed
 
 一次任务的交互流程
 1. 前端通过UI创建任务
