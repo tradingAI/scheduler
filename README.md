@@ -1,1 +1,2 @@
-# scheduler
+# Scheduler
+[Design](docs/README.md)
