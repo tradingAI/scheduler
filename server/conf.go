@@ -52,6 +52,7 @@ func LoadConf() (conf Conf, err error) {
 		glog.Error(err)
 		return
 	}
+
 	conf = Conf{
 		DB: pg.DBConf{
 			Database:     os.Getenv("SCHEDULER_POSTGRES_DB"),
