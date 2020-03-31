@@ -1,0 +1,13 @@
+name: CI
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run test in docker container
+      run: docker-compose -f docker-compose.yml up --exit-code-from bazel bazel 

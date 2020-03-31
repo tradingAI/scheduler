@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  bazel:
+    image: tradingai/bazel:latest
+    command:
+      /bin/bash /go/src/github.com/tradingAI/scheduler/docker-compose.sh
+    volumes:
+      - .:/go/src/github.com/tradingAI/scheduler/
