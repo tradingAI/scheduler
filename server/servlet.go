@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/minio/minio-go/v6"
 	pg "github.com/tradingAI/go/db/postgres"
+	redis2 "github.com/tradingAI/go/db/redis"
 	minio2 "github.com/tradingAI/go/s3/minio"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
 	m "github.com/tradingAI/scheduler/server/model"
@@ -22,7 +23,7 @@ type Servlet struct {
 	Conf  Conf
 	DB    *gorm.DB
 	Minio *minio.Client
-	Redis *redis.Conn
+	Redis redis.Conn
 }
 
 func New(conf Conf) (s *Servlet, err error) {
@@ -53,6 +54,12 @@ func New(conf Conf) (s *Servlet, err error) {
 		return
 	}
 
+	s.Redis, err = redis2.NewRedisClient(s.Conf.Redis)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
 	return
 }
 
@@ -62,7 +69,7 @@ func (s *Servlet) Free() {
 		return
 	}
 
-	if err := (*s.Redis).Close(); err != nil {
+	if err := s.Redis.Close(); err != nil {
 		glog.Error(err)
 		return
 	}
