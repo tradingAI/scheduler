@@ -26,13 +26,6 @@ func (s *Servlet) StopJob(ctx context.Context, req *pb.StopJobRequest) (resp *pb
 		return
 	}
 
-	jobID := req.GetJobId()
-	if jobID == "" {
-		err = common.ErrEmptyJobID
-		glog.Error(err)
-		return
-	}
-
 	// TODO(mickey): stop job
 
 	return

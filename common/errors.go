@@ -18,7 +18,6 @@ var (
 	ErrNilRunner           = makeError(errRunner, "runner is nil")
 	ErrNilCreateJobRequest = makeError(errJob, "create job request is nil")
 	ErrNilStopJobRequest   = makeError(errJob, "stop job request is nil")
-	ErrEmptyJobID          = makeError(errJob, "job id is empty")
 )
 
 func makeError(scope errScope, msg ...string) error {
