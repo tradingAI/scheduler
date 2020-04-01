@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"github.com/minio/minio-go/v6"
@@ -21,6 +22,7 @@ type Servlet struct {
 	Conf  Conf
 	DB    *gorm.DB
 	Minio *minio.Client
+	Redis *redis.Conn
 }
 
 func New(conf Conf) (s *Servlet, err error) {
@@ -56,6 +58,11 @@ func New(conf Conf) (s *Servlet, err error) {
 
 func (s *Servlet) Free() {
 	if err := s.DB.Close(); err != nil {
+		glog.Error(err)
+		return
+	}
+
+	if err := (*s.Redis).Close(); err != nil {
 		glog.Error(err)
 		return
 	}
