@@ -80,3 +80,8 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 
 	return
 }
+
+func (s *Servlet) DestoryRunner(ctx context.Context, req *pb.DestoryRunnerRequest) (resp *pb.DestoryRunnerResponse, err error) {
+
+	return
+}

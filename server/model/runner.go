@@ -7,7 +7,7 @@ import (
 
 type Runner struct {
 	gorm.Model
-	RunnerID           string        `gorm:"column:runner_id; not null" json:"version"`
+	RunnerID           string        `gorm:"column:runner_id; not null" json:"runner_id"`
 	Status             int           `gorm:"column:status; not null" json:"status"`
 	JobsID             pq.Int64Array `gorm:"type:integer[]; column:jobs_id" json:"jobs_id"`
 	CPUCoreNum         int           `gorm:"column:cpu_core_num; not null" json:"cpu_core_num"`

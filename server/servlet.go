@@ -41,7 +41,7 @@ func New(conf Conf) (s *Servlet, err error) {
 
 	// Drop and Recreate db tables
 	if conf.DB.Reset {
-		if err = pg.ResetTables(s.DB, &m.Runner{}); err != nil {
+		if err = pg.ResetTables(s.DB, &m.Runner{}, &m.Job{}); err != nil {
 			glog.Error(err)
 			return
 		}
