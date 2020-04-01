@@ -7,12 +7,14 @@ import (
 
 	"github.com/golang/glog"
 	pg "github.com/tradingAI/go/db/postgres"
+	"github.com/tradingAI/go/db/redis"
 	minio "github.com/tradingAI/go/s3/minio"
 )
 
 type Conf struct {
 	DB        pg.DBConf
 	Minio     minio.MinioConf
+	Redis     redis.RedisConf
 	Scheduler SchedulerConf
 }
 
@@ -30,6 +32,12 @@ func LoadConf() (conf Conf, err error) {
 	}
 
 	dbPort, err := strconv.Atoi(os.Getenv("SCHEDULER_POSTGRES_PORT"))
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	dbReset, err := strconv.ParseBool(os.Getenv("SCHEDULER_POSTGRES_RESET"))
 	if err != nil {
 		glog.Error(err)
 		return
@@ -53,6 +61,12 @@ func LoadConf() (conf Conf, err error) {
 		return
 	}
 
+	redisPort, err := strconv.Atoi(os.Getenv("SCHEDULER_REDIS_PORT"))
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
 	conf = Conf{
 		DB: pg.DBConf{
 			Database:     os.Getenv("SCHEDULER_POSTGRES_DB"),
@@ -61,6 +75,7 @@ func LoadConf() (conf Conf, err error) {
 			Port:         dbPort,
 			Host:         os.Getenv("SCHEDULER_POSTGRES_HOST"),
 			ReconnectSec: time.Duration(dbReconnectSec) * time.Second,
+			Reset:        dbReset,
 		},
 		Minio: minio.MinioConf{
 			AccessKey: os.Getenv("SCHEDULER_MINIO_ACCESS_KEY"),
@@ -68,6 +83,10 @@ func LoadConf() (conf Conf, err error) {
 			Host:      os.Getenv("SCHEDULER_MINIO_HOST"),
 			Port:      minioPort,
 			Secure:    minioSecure,
+		},
+		Redis: redis.RedisConf{
+			Host: os.Getenv("SCHEDULER_REDIS_HOST"),
+			Port: redisPort,
 		},
 		Scheduler: SchedulerConf{
 			Port:              port,
@@ -90,6 +109,11 @@ func (c *Conf) Validate() (err error) {
 	}
 
 	if err = c.Minio.Validate(); err != nil {
+		glog.Error(err)
+		return
+	}
+
+	if err = c.Redis.Validate(); err != nil {
 		glog.Error(err)
 		return
 	}

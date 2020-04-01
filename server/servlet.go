@@ -7,12 +7,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"github.com/minio/minio-go/v6"
 	pg "github.com/tradingAI/go/db/postgres"
+	redis2 "github.com/tradingAI/go/db/redis"
 	minio2 "github.com/tradingAI/go/s3/minio"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
+	m "github.com/tradingAI/scheduler/server/model"
 	"google.golang.org/grpc"
 )
 
@@ -20,6 +23,7 @@ type Servlet struct {
 	Conf  Conf
 	DB    *gorm.DB
 	Minio *minio.Client
+	Redis redis.Conn
 }
 
 func New(conf Conf) (s *Servlet, err error) {
@@ -35,8 +39,23 @@ func New(conf Conf) (s *Servlet, err error) {
 		return
 	}
 
+	// Drop and Recreate db tables
+	if conf.DB.Reset {
+		if err = pg.ResetTables(s.DB, &m.Runner{}, &m.Job{}); err != nil {
+			glog.Error(err)
+			return
+		}
+	}
+
 	// Init s3 client
 	s.Minio, err = minio2.NewMinioClient(s.Conf.Minio)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	// Init redis client
+	s.Redis, err = redis2.NewRedisClient(s.Conf.Redis)
 	if err != nil {
 		glog.Error(err)
 		return
@@ -47,6 +66,11 @@ func New(conf Conf) (s *Servlet, err error) {
 
 func (s *Servlet) Free() {
 	if err := s.DB.Close(); err != nil {
+		glog.Error(err)
+		return
+	}
+
+	if err := s.Redis.Close(); err != nil {
 		glog.Error(err)
 		return
 	}

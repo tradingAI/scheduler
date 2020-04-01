@@ -3,20 +3,30 @@ package server
 import (
 	"context"
 
+	"github.com/golang/glog"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
+	"github.com/tradingAI/scheduler/common"
 )
 
-func (s *Servlet) DestoryRunner(ctx context.Context, req *pb.DestoryRunnerRequest) (resp *pb.DestoryRunnerResponse, err error) {
-
-	return
-}
-
 func (s *Servlet) CreateJob(ctx context.Context, req *pb.CreateJobRequest) (resp *pb.CreateJobResponse, err error) {
+	if req == nil {
+		err = common.ErrNilCreateJobRequest
+		glog.Error(err)
+		return
+	}
 
+	// TODO(mickey): create job
 	return
 }
 
 func (s *Servlet) StopJob(ctx context.Context, req *pb.StopJobRequest) (resp *pb.StopJobResponse, err error) {
+	if req == nil {
+		err = common.ErrNilStopJobRequest
+		glog.Error(err)
+		return
+	}
+
+	// TODO(mickey): stop job
 
 	return
 }
