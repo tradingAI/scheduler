@@ -54,6 +54,7 @@ func New(conf Conf) (s *Servlet, err error) {
 		return
 	}
 
+	// Init redis client
 	s.Redis, err = redis2.NewRedisClient(s.Conf.Redis)
 	if err != nil {
 		glog.Error(err)
