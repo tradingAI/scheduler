@@ -35,6 +35,12 @@ func LoadConf() (conf Conf, err error) {
 		return
 	}
 
+	dbReset, err := strconv.ParseBool(os.Getenv("SCHEDULER_POSTGRES_RESET"))
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
 	port, err := strconv.Atoi(os.Getenv("SCHEDULER_PORT"))
 	if err != nil {
 		glog.Error(err)
@@ -61,6 +67,7 @@ func LoadConf() (conf Conf, err error) {
 			Port:         dbPort,
 			Host:         os.Getenv("SCHEDULER_POSTGRES_HOST"),
 			ReconnectSec: time.Duration(dbReconnectSec) * time.Second,
+			Reset:        dbReset,
 		},
 		Minio: minio.MinioConf{
 			AccessKey: os.Getenv("SCHEDULER_MINIO_ACCESS_KEY"),

@@ -13,6 +13,7 @@ import (
 	pg "github.com/tradingAI/go/db/postgres"
 	minio2 "github.com/tradingAI/go/s3/minio"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
+	m "github.com/tradingAI/scheduler/server/model"
 	"google.golang.org/grpc"
 )
 
@@ -33,6 +34,14 @@ func New(conf Conf) (s *Servlet, err error) {
 	if err != nil {
 		glog.Error(err)
 		return
+	}
+
+	// Drop and Recreate db tables
+	if conf.DB.Reset {
+		if err = pg.ResetTables(s.DB, &m.Runner{}); err != nil {
+			glog.Error(err)
+			return
+		}
 	}
 
 	// Init s3 client
