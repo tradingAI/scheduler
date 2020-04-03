@@ -14,10 +14,15 @@ const (
 
 var (
 	// Runner error
-	ErrEmptyRunnerID       = makeError(errRunner, "runner id is empty")
-	ErrNilRunner           = makeError(errRunner, "runner is nil")
-	ErrNilCreateJobRequest = makeError(errJob, "create job request is nil")
-	ErrNilStopJobRequest   = makeError(errJob, "stop job request is nil")
+	ErrEmptyRunnerID    = makeError(errRunner, "runner id is empty")
+	ErrNilRunner        = makeError(errRunner, "runner is nil")
+	ErrEmptyRunnerToken = makeError(errRunner, "runner token is empty")
+
+	// Job error
+	ErrNilCreateJobRequest          = makeError(errJob, "create job request is nil")
+	ErrNilStopJobRequest            = makeError(errJob, "stop job request is nil")
+	ErrInvalidCreateJobRequestInput = makeError(errJob, "input of create job request is invalid")
+	ErrNilRemoveJobRequest          = makeError(errJob, "remove job request is nil")
 )
 
 func makeError(scope errScope, msg ...string) error {

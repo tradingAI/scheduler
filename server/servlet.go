@@ -15,7 +15,7 @@ import (
 	redis2 "github.com/tradingAI/go/db/redis"
 	minio2 "github.com/tradingAI/go/s3/minio"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
-	m "github.com/tradingAI/scheduler/server/model"
+	m "github.com/tradingAI/go/db/postgres/model"
 	"google.golang.org/grpc"
 )
 
