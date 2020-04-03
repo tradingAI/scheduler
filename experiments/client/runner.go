@@ -20,9 +20,23 @@ func main() {
 	defer conn.Close()
 	c := pb.NewSchedulerClient(conn)
 
-	r, err := c.RegisterRunner(context.Background(), &pb.RegisterRunnerRequest{RunnerId: "66666"})
+	runner := pb.Runner{
+		Id:                 "6666",
+		Status:             pb.RunnerStatus_IDLE,
+		CpuCoreNum:         4,
+		CpuUtilization:     0.1,
+		GpuNum:             0,
+		GpuUtilization:     0,
+		Memory:             2 * 1024 * 1024 * 1024,
+		AvailableMemory:    1 * 1024 * 1024 * 1024,
+		GpuMemory:          0,
+		AvailableGpuMemory: 0,
+		Token:              "admin",
+	}
+
+	resp, err := c.HeartBeat(context.Background(), &pb.HeartBeatRequest{Runner: &runner})
 	if err != nil {
 		glog.Fatal(err)
 	}
-	glog.Infof("Resp: %v", r.GetOk())
+	glog.Infof("Resp: %v", resp.GetOk())
 }
