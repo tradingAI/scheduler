@@ -29,9 +29,8 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 		return
 	}
 
-	token := runnerPb.GetToken()
-	if token == "" {
-		err = common.ErrEmptyRunnerToken
+	err = s.CheckTokenExisted(runnerPb.GetToken())
+	if err != nil {
 		glog.Error(err)
 		return
 	}
@@ -47,14 +46,6 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 
 		// register runner if not found
 		glog.Infof("runner not found, register new runner %s", runnerID)
-
-		// check token
-		var user m.User
-		err = s.DB.Where("token = ?", token).Find(&user).Error
-		if err != nil {
-			glog.Error(err)
-			return
-		}
 
 		newRunner, err := s.CreateRunner(runnerID)
 		if err != nil {
@@ -94,7 +85,7 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 		err = s.DB.Where("id = ?", jobPb.Id).Find(&job).Error
 		if err != nil {
 			glog.Error(err)
-			if err == gorm.ErrRecordNotFound {
+			if gorm.IsRecordNotFoundError(err) {
 				glog.Warningf("job [%d] is not existed", jobPb.Id)
 				continue
 			}
@@ -112,6 +103,39 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 }
 
 func (s *Servlet) DestoryRunner(ctx context.Context, req *pb.DestoryRunnerRequest) (resp *pb.DestoryRunnerResponse, err error) {
+	if req == nil {
+		err = common.ErrNilDestoryRunnerRequest
+		glog.Error(err)
+		return
+	}
+
+	err = s.CheckTokenExisted(req.GetToken())
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	runnerID := req.GetRunnerId()
+
+	var runner m.Runner
+	// check whether runner is existed
+	err = s.DB.Where("runner_id = ?", runnerID).Find(&runner).Error
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	_, err = s.Redis.Do("LPUSH", genRedisKey(DESTORY_RUNNER, runnerID), runnerID)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	err = s.DB.Delete(&runner).Error
+	if err != nil {
+		glog.Error(err)
+		return
+	}
 
 	return
 }

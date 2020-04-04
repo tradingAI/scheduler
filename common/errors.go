@@ -14,9 +14,10 @@ const (
 
 var (
 	// Runner error
-	ErrEmptyRunnerID    = makeError(errRunner, "runner id is empty")
-	ErrNilRunner        = makeError(errRunner, "runner is nil")
-	ErrEmptyRunnerToken = makeError(errRunner, "runner token is empty")
+	ErrEmptyRunnerID           = makeError(errRunner, "runner id is empty")
+	ErrNilRunner               = makeError(errRunner, "runner is nil")
+	ErrEmptyRunnerToken        = makeError(errRunner, "runner token is empty")
+	ErrNilDestoryRunnerRequest = makeError(errRunner, "destory runner request is nil")
 
 	// Job error
 	ErrNilCreateJobRequest          = makeError(errJob, "create job request is nil")

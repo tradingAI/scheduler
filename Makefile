@@ -7,4 +7,4 @@ run:
 	go run main/main.go
 
 test:
-	docker-compose -f docker-compose.yml up bazel 
+	docker-compose -f docker-compose.yml run bazel 
