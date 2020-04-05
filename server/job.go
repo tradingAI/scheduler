@@ -35,6 +35,7 @@ func (s *Servlet) CreateJob(ctx context.Context, req *pb.CreateJobRequest) (resp
 		}
 		return
 	}
+	glog.Infof("find idle runner: [%s]", runner.RunnerID)
 
 	// Assign job
 	jobID := req.GetJobId()
@@ -168,10 +169,12 @@ func convertJobModelToJobProto(job m.Job) (jobPb *pb.Job, err error) {
 		GpusIndex:        int64ArrToInt32Arr(job.GPUsIndex),
 		Input:            jobInput,
 	}
+
 	return
 }
 
 func convertJobInput(jobType pb.JobType, input []byte) (jobInput *pb.JobInput, err error) {
+	jobInput = &pb.JobInput{}
 	err = proto.Unmarshal(input, jobInput)
 	if err != nil {
 		glog.Error(err)

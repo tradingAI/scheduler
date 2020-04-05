@@ -45,7 +45,7 @@ func (s *Servlet) HeartBeat(ctx context.Context, req *pb.HeartBeatRequest) (resp
 		}
 
 		// register runner if not found
-		glog.Infof("runner not found, register new runner %s", runnerID)
+		glog.Infof("runner not found, register new runner [%s]", runnerID)
 
 		newRunner, err := s.CreateRunner(runnerID)
 		if err != nil {

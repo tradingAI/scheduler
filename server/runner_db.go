@@ -21,6 +21,7 @@ func (s *Servlet) CreateRunner(runnerID string) (runner *m.Runner, err error) {
 }
 
 func (s *Servlet) SelectIdleRunner() (runner *m.Runner, err error) {
+	runner = &m.Runner{}
 	err = s.DB.Where("status = ?", pb.RunnerStatus_IDLE).First(&runner).Error
 	if err != nil {
 		glog.Error(err)
