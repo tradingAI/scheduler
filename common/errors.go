@@ -24,6 +24,7 @@ var (
 	ErrNilStopJobRequest            = makeError(errJob, "stop job request is nil")
 	ErrInvalidCreateJobRequestInput = makeError(errJob, "input of create job request is invalid")
 	ErrNilRemoveJobRequest          = makeError(errJob, "remove job request is nil")
+	ErrUnknownJobType               = makeError(errJob, "unknown job type")
 )
 
 func makeError(scope errScope, msg ...string) error {

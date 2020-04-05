@@ -6,20 +6,23 @@ import (
 
 	"github.com/golang/glog"
 	pb "github.com/tradingAI/proto/gen/go/scheduler"
-	"google.golang.org/grpc"
+	"github.com/tradingAI/scheduler/experiments/client"
 )
 
 func main() {
 	flag.Parse()
 	flag.Set("logtostderr", "true")
 
-	conn, err := grpc.Dial("localhost:8889", grpc.WithInsecure(), grpc.WithBlock())
+	client := client.New()
+
+	err := registerRunner(client.Client)
 	if err != nil {
 		glog.Fatal(err)
 	}
-	defer conn.Close()
-	c := pb.NewSchedulerClient(conn)
 
+}
+
+func registerRunner(c pb.SchedulerClient) (err error) {
 	runner := pb.Runner{
 		Id:                 "6666",
 		Status:             pb.RunnerStatus_IDLE,
@@ -33,10 +36,17 @@ func main() {
 		AvailableGpuMemory: 0,
 		Token:              "admin",
 	}
-
 	resp, err := c.HeartBeat(context.Background(), &pb.HeartBeatRequest{Runner: &runner})
 	if err != nil {
-		glog.Fatal(err)
+		glog.Error(err)
+		return
 	}
-	glog.Infof("Resp: %v", resp.GetOk())
+
+	if resp.GetOk() {
+		glog.Info("Register runner successfully")
+	} else {
+		glog.Fatalf("Register runner failed")
+	}
+
+	return
 }

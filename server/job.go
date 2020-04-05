@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 
+	"github.com/golang/protobuf/proto"
+
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	m "github.com/tradingAI/go/db/postgres/model"
@@ -37,7 +39,26 @@ func (s *Servlet) CreateJob(ctx context.Context, req *pb.CreateJobRequest) (resp
 	// Assign job
 	jobID := req.GetJobId()
 
-	_, err = s.Redis.Do("LPUSH", genRedisKey(CREATE_JOB, runner.RunnerID), jobID)
+	var job m.Job
+	err = s.DB.Where("id = ?", jobID).Find(&job).Error
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	jobPb, err := convertJobModelToJobProto(job)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	jobBytes, err := proto.Marshal(jobPb)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	_, err = s.Redis.Do("LPUSH", genRedisKey(CREATE_JOB, runner.RunnerID), jobBytes)
 	if err != nil {
 		glog.Error(err)
 		return
@@ -121,6 +142,40 @@ func (s *Servlet) RemoveJob(ctx context.Context, req *pb.RemoveJobRequest) (resp
 
 	resp = &pb.RemoveJobResponse{
 		Ok: true,
+	}
+
+	return
+}
+
+func convertJobModelToJobProto(job m.Job) (jobPb *pb.Job, err error) {
+	jobInput, err := convertJobInput(pb.JobType(job.Type), job.Input)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	jobPb = &pb.Job{
+		Id:               uint64(job.ID),
+		RunnerId:         job.RunnerID,
+		Type:             pb.JobType(job.Type),
+		Status:           pb.JobStatus(job.Status),
+		Retry:            job.Retry,
+		MaxRetry:         job.MaxRetry,
+		CreateTimeUsec:   job.CreateTimeUsec,
+		FinishedTimeUsec: job.FinishedTimeUsec,
+		TotalSteps:       job.TotalSteps,
+		CurrentStep:      job.CurrentStep,
+		GpusIndex:        int64ArrToInt32Arr(job.GPUsIndex),
+		Input:            jobInput,
+	}
+	return
+}
+
+func convertJobInput(jobType pb.JobType, input []byte) (jobInput *pb.JobInput, err error) {
+	err = proto.Unmarshal(input, jobInput)
+	if err != nil {
+		glog.Error(err)
+		return
 	}
 
 	return

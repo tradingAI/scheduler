@@ -15,3 +15,11 @@ func int32ArrToInt64Arr(source []int32) (target []int64) {
 
 	return
 }
+
+func int64ArrToInt32Arr(source []int64) (target []int32) {
+	for _, s := range source {
+		target = append(target, int32(s))
+	}
+
+	return
+}
